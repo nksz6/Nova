@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Nova</string>
+    <string name="current_temperature">72°</string>
+    <string name="weather_condition">Sunny</string>
+    <string name="location">Minnetrista, MN</string>
+    <string name="feels_like">Feels like 78°</string>
+    <string name="low_temp">Low 65°</string>
+    <string name="high_temp">High 80°</string>
+    <string name="humidity">Humidity 100%</string>
+    <string name="pressure">Pressure 1023 hPa</string>
 </resources>

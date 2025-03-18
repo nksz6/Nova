@@ -103,11 +103,11 @@ fun WeatherScreen(modifier: Modifier = Modifier) {
         //Feels like
         Text(
             text = stringResource(id = R.string.feels_like),
-            fontSize = 15.sp,
+            fontSize = 25.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(vertical = 140.dp)
-                .padding(horizontal = 35.dp) //seemed roughly center under temp?
+                .padding(horizontal = 10.dp) //seemed roughly center under temp?
         )
 
         //Low Temperature

@@ -1,3 +1,5 @@
+//ICS342 NICK KELLEY
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -16,6 +18,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        //THIS IS MY SECRET API!!!
+        buildConfigField("String", "API_KEY", "\"d9bfc51cf182ba674f0de1825d4c92d6\"")
     }
 
     buildTypes {
@@ -36,8 +41,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true  //u need this to access API key!
     }
 }
+
 
 dependencies {
 
@@ -49,6 +56,17 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    //ViewModel and LiveData
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.runtime.livedata)
+    //retrofit with Gson
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

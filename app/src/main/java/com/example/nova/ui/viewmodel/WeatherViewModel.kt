@@ -2,14 +2,15 @@
 package com.example.nova.ui.viewmodel
 
 //imports
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nova.data.model.WeatherResponse
 import com.example.nova.data.network.WeatherApiService
 import com.example.nova.data.repository.WeatherRepository
+import com.example.nova.data.model.ForecastResponse
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,12 +45,20 @@ class WeatherViewModel(
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    //livedata for forecast data
+    private val _forecastData = MutableLiveData<ForecastResponse>()
+    val forecastData: LiveData<ForecastResponse> = _forecastData
+
     //cache variables
     private var lastFetchTime: Long = 0
     private var lastLocation: String? = null
 
-    //for rate limiting
-    private var currentFetchJob: Job? = null
+    //last fetched zip code for caching
+    private var lastZipCode: String? = null
+
+    //seperate job variables for current weather and forecast
+    private var currentWeatherJob: Job? = null
+    private var forecastJob: Job? = null
 
     //initial load for a default location
     init {
@@ -74,18 +83,11 @@ class WeatherViewModel(
         fetchWeatherForLocation(zipCode, LocationType.ZIP_CODE)
     }
 
-    fun fetchWeatherForCoordinates(lat: Double, lon: Double) {
-        fetchWeatherForLocation(
-            Coordinates(lat, lon),
-            LocationType.COORDINATES
-        )
-    }
-
-     //common method to fetch weather data for any location type.
-     //handles loading state, caching, error handling, and rate limiting.
+    //this is the main method to fetch weather data for any location type.
+    //handles loading state, caching, error handling, and rate limiting.
     private fun fetchWeatherForLocation(location: Any, locationType: LocationType) {
-        //cancel any ongoing fetch
-        currentFetchJob?.cancel()
+        //cancel any ongoing weather fetch
+        currentWeatherJob?.cancel()
 
         //format location as string for cache check
         val locationKey = when (location) {
@@ -111,7 +113,7 @@ class WeatherViewModel(
         // Store location for cache
         lastLocation = locationKey
 
-        currentFetchJob = viewModelScope.launch {
+        currentWeatherJob = viewModelScope.launch {
             // Rate limiting - wait a bit if we recently made a request
             if (currentTime - lastFetchTime < FETCH_DEBOUNCE_MS) {
                 delay(FETCH_DEBOUNCE_MS)
@@ -136,7 +138,10 @@ class WeatherViewModel(
                     lastFetchTime = Date().time
 
                     //debugging the temp values
-                    Log.d(TAG, "Temp: ${weather.main.temp}, Min: ${weather.main.tempMin}, Max: ${weather.main.tempMax}")
+                    Log.d(
+                        TAG,
+                        "Temp: ${weather.main.temp}, Min: ${weather.main.tempMin}, Max: ${weather.main.tempMax}"
+                    )
                 }.onFailure { exception ->
                     handleError(exception, locationKey)
                 }
@@ -162,10 +167,56 @@ class WeatherViewModel(
                     else -> "Server error: ${exception.code()}. Please try again later."
                 }
             }
+
             else -> exception.message ?: "Unknown error occurred"
         }
 
         _error.value = errorMessage
         _isLoading.value = false
+    }
+
+    //function to fetch forecast data via zip code
+    fun fetchForecastForZipCode(zipCode: String) {
+
+        //cancel any ongoing fetch
+        forecastJob?.cancel()
+
+        //set loading state if not already loading
+        if (_isLoading.value != true) {
+            _isLoading.value = true
+        }
+        _error.value = null
+
+        //store location for cache
+        lastZipCode = zipCode
+
+        forecastJob = viewModelScope.launch {
+
+            //rate limiting (wait a little if a request was recently made)
+            val currentTime = Date().time
+            if (currentTime - lastFetchTime < FETCH_DEBOUNCE_MS) {
+                delay(FETCH_DEBOUNCE_MS)
+            }
+
+            try {
+                //call the repository method
+                val result = repository.getForecastByZip(zipCode)
+
+                //handle the result
+                result.onSuccess { forecast ->
+                    Log.d(TAG, "Successfully fetched forecast for $zipCode")
+                    _forecastData.value = forecast
+                    //only set loading to false if weather data is also loaded
+                    if (_weatherData.value != null) {
+                        _isLoading.value = false
+                    }
+                    lastFetchTime = Date().time
+                }.onFailure { exception ->
+                    handleError(exception, "zipCode: $zipCode")
+                }
+            } catch (e: Exception) {
+                handleError(e, "zipCode: $zipCode")
+            }
+        }
     }
 }

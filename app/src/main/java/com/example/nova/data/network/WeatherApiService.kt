@@ -12,6 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
+import com.example.nova.data.model.ForecastResponse
 
 //retrofit interface for API calls
 interface WeatherApiService {
@@ -40,6 +41,16 @@ interface WeatherApiService {
         @Query("units") units: String = DEFAULT_UNITS,
         @Query("appid") apiKey: String = BuildConfig.API_KEY
     ): WeatherResponse
+
+    //getting 16-day forecast by zip
+    @GET("forecast/daily")
+    suspend fun getForecastByZip(
+        //QUERY PARAMETERS:
+        @Query("zip") zipCode: String,  //'zipcode' = the 5 digit zip code that will be inputted as a string
+        @Query("cnt") count: Int = 16, //'count' = the number of days to forecast, defaulting to 16 days
+        @Query("units") units: String = DEFAULT_UNITS,  //'units' = using the existing 'DEFAULT_UNITS' variable (which is imperial)
+        @Query("appid") apiKey: String = BuildConfig.API_KEY    //'apiKey' = my API key for OpenWeatherMap
+    ): ForecastResponse
 
     companion object {
         private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"

@@ -1,24 +1,30 @@
+@file:Suppress("UnstableApiUsage") //giving me dumb warnings
+
+//settings.gradle.kts
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    //enforce repository resolution from this settings file.
+    //any repositories added directly in sub-projects (build.gradle files) will be ignored.
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+
     repositories {
+        //central repository definitions for the entire project.
         google()
         mavenCentral()
+
+        //add any other shared repositories here...
+        //example: maven("https://...")
     }
 }
 
-rootProject.name = "Nova"
+rootProject.name = "MyAndroidProject"
+
 include(":app")
- 
+//include other modules...

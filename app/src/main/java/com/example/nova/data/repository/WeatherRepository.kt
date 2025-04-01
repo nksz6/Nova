@@ -6,6 +6,7 @@ package com.example.nova.data.repository
 import android.util.Log
 import com.example.nova.data.model.WeatherResponse
 import com.example.nova.data.network.WeatherApiService
+import com.example.nova.data.model.ForecastResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -48,6 +49,41 @@ class WeatherRepository(private val weatherApiService: WeatherApiService) {
         return try {
             //executing API call on the IO dispatcher
             //(so main thread doesn't get blocked)
+            val response = withContext(Dispatchers.IO) {
+                apiCall()
+            }
+            Result.success(response)
+        } catch (e: HttpException) {
+            //http error handling
+            Log.e(TAG, "HTTP error: ${e.code()}", e)
+            Result.failure(e)
+        } catch (e: IOException) {
+            //network error handling
+            Log.e(TAG, "Network error", e)
+            Result.failure(e)
+        } catch (e: Exception) {
+            //any other errors
+            Log.e(TAG, "Unexpected error", e)
+            Result.failure(e)
+        }
+    }
+
+    //FOR FORECAST NOW:
+
+    //getting forecast by zip code
+    //called by ViewModel to fetch forecast for a zip code
+    suspend fun getForecastByZip(zipCode: String): Result<ForecastResponse> {
+        return fetchForecast {
+            Log.d(TAG, "Fetching forecast for zip code: $zipCode")
+            weatherApiService.getForecastByZip(zipCode)
+        }
+    }
+
+    //generic helper to fetch forecast + handle exceptions
+    //works like fetchWeather, but for forecast lol
+    private suspend fun fetchForecast(apiCall: suspend () -> ForecastResponse): Result<ForecastResponse> {
+        return try {
+            //execute API call on the IO dispatcher
             val response = withContext(Dispatchers.IO) {
                 apiCall()
             }

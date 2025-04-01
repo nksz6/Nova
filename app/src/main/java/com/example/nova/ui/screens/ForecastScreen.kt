@@ -25,6 +25,7 @@ import java.util.*
 import kotlin.math.roundToInt
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import com.example.nova.utils.getWeatherIcon
 
 //forecast screen
 @Composable
@@ -133,7 +134,7 @@ fun ForecastDayItem(forecast: DailyForecast) {
             //weather icon
             forecast.weather.firstOrNull()?.let { weather ->
                 Image(
-                    painter = painterResource(id = getForecastWeatherIcon(weather.icon)),
+                    painter = painterResource(id = getWeatherIcon(weather.icon)),
                     contentDescription = weather.description,
                     modifier = Modifier
                         .size(48.dp)
@@ -211,21 +212,5 @@ fun ForecastDayItem(forecast: DailyForecast) {
 fun String.capitalize(): String {
     return this.replaceFirstChar {
         if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
-    }
-}
-
-//helper function to show weather icons on the forecast screen
-@Composable
-fun getForecastWeatherIcon(iconCode: String): Int {
-    return when (iconCode.take(2)) { //Only take the first two, not caring about day/night
-        "01" -> R.drawable.ic_sunny
-        "02" -> R.drawable.ic_few_clouds
-        "03" -> R.drawable.ic_scattered_clouds
-        "04" -> R.drawable.ic_broken_clouds
-        "09" -> R.drawable.ic_shower_rain
-        "10" -> R.drawable.ic_rain
-        "11" -> R.drawable.ic_thunderstorm
-        "13" -> R.drawable.ic_snowing
-        else -> R.drawable.ic_sunny //default image if I don't have one for the current conditions
     }
 }

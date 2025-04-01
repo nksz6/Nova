@@ -1,6 +1,8 @@
 //ICS342 - NICK KELLEY
-package com.example.nova.ui.screens
 
+//package
+package com.example.nova.ui.screens
+//imports
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
 
+//forecast screen
 @Composable
 fun ForecastScreen(
     viewModel: WeatherViewModel,
@@ -33,7 +36,7 @@ fun ForecastScreen(
     val error by viewModel.error.observeAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Back button at the top
+        //back button at the top
         Button(
             onClick = { navController.navigateUp() },
             modifier = Modifier.padding(16.dp)
@@ -74,7 +77,7 @@ fun ForecastScreen(
                 }
             }
             forecastData != null -> {
-                // City name and header
+                //city name and header
                 forecastData?.city?.let { city ->
                     Text(
                         text = stringResource(R.string.forecast_for, city.name),
@@ -83,7 +86,7 @@ fun ForecastScreen(
                     )
                 }
 
-                // Forecast list
+                //forecast list
                 LazyColumn(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
@@ -123,7 +126,7 @@ fun ForecastDayItem(forecast: DailyForecast) {
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            // Date
+            //date
             Text(
                 text = dateFormat.format(date),
                 fontWeight = FontWeight.Bold,
@@ -132,7 +135,7 @@ fun ForecastDayItem(forecast: DailyForecast) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Temperature range
+            //temperature range
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -153,7 +156,7 @@ fun ForecastDayItem(forecast: DailyForecast) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Weather description
+            //weather description
             forecast.weather.firstOrNull()?.let { weather ->
                 Text(
                     text = weather.description.capitalize(),
@@ -163,7 +166,7 @@ fun ForecastDayItem(forecast: DailyForecast) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Additional details
+            //additional details
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -185,7 +188,7 @@ fun ForecastDayItem(forecast: DailyForecast) {
     }
 }
 
-// Extension function to capitalize first letter of a string
+//extension function to capitalize first letter of a string
 fun String.capitalize(): String {
     return this.replaceFirstChar {
         if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()

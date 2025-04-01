@@ -23,6 +23,8 @@ import com.example.nova.ui.viewmodel.WeatherViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 
 //forecast screen
 @Composable
@@ -110,10 +112,11 @@ fun ForecastScreen(
     }
 }
 
+//forecast for each day
 @Composable
 fun ForecastDayItem(forecast: DailyForecast) {
     val dateFormat = SimpleDateFormat("EEE, MMM d", Locale.getDefault())
-    val date = Date(forecast.dt * 1000) // Convert from Unix timestamp
+    val date = Date(forecast.dt * 1000) //convert from Unix timestamp
 
     Card(
         modifier = Modifier
@@ -121,68 +124,84 @@ fun ForecastDayItem(forecast: DailyForecast) {
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            //date
-            Text(
-                text = dateFormat.format(date),
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            //temperature range
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(
-                        R.string.high_temp,
-                        forecast.temp.max.roundToInt()
-                    )
-                )
-                Text(
-                    text = stringResource(
-                        R.string.low_temp,
-                        forecast.temp.min.roundToInt()
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            //weather description
+            //weather icon
             forecast.weather.firstOrNull()?.let { weather ->
-                Text(
-                    text = weather.description.capitalize(),
-                    fontSize = 16.sp
+                Image(
+                    painter = painterResource(id = getForecastWeatherIcon(weather.icon)),
+                    contentDescription = weather.description,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(end = 16.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            //additional details
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
+                //date
                 Text(
-                    text = stringResource(
-                        R.string.humidity_with_value,
-                        forecast.humidity
-                    )
+                    text = dateFormat.format(date),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
                 )
-                Text(
-                    text = stringResource(
-                        R.string.wind_speed,
-                        forecast.windSpeed
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                //temperature range
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.high_temp,
+                            forecast.temp.max.roundToInt()
+                        )
                     )
-                )
+                    Text(
+                        text = stringResource(
+                            R.string.low_temp,
+                            forecast.temp.min.roundToInt()
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                //weather description
+                forecast.weather.firstOrNull()?.let { weather ->
+                    Text(
+                        text = weather.description.capitalize(),
+                        fontSize = 16.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                //additional details
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.humidity_with_value,
+                            forecast.humidity
+                        )
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.wind_speed,
+                            forecast.windSpeed
+                        )
+                    )
+                }
             }
         }
     }
@@ -192,5 +211,21 @@ fun ForecastDayItem(forecast: DailyForecast) {
 fun String.capitalize(): String {
     return this.replaceFirstChar {
         if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+    }
+}
+
+//helper function to show weather icons on the forecast screen
+@Composable
+fun getForecastWeatherIcon(iconCode: String): Int {
+    return when (iconCode.take(2)) { //Only take the first two, not caring about day/night
+        "01" -> R.drawable.ic_sunny
+        "02" -> R.drawable.ic_few_clouds
+        "03" -> R.drawable.ic_scattered_clouds
+        "04" -> R.drawable.ic_broken_clouds
+        "09" -> R.drawable.ic_shower_rain
+        "10" -> R.drawable.ic_rain
+        "11" -> R.drawable.ic_thunderstorm
+        "13" -> R.drawable.ic_snowing
+        else -> R.drawable.ic_sunny //default image if I don't have one for the current conditions
     }
 }

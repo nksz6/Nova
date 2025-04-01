@@ -233,7 +233,7 @@ fun CurrentWeatherScreen(
     }
 }
 
-//helper function for the icons
+//helper function to show icons on the current weather screen
 @Composable
 fun getWeatherIcon(iconCode: String): Int {
     return when (iconCode.take(2)) { //Only take the first two, not caring about day/night

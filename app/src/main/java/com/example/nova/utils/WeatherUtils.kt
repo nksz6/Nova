@@ -20,6 +20,7 @@ fun getWeatherIcon(iconCode: String): Int {
         "10" -> R.drawable.ic_rain
         "11" -> R.drawable.ic_thunderstorm
         "13" -> R.drawable.ic_snowing
+        "50" -> R.drawable.ic_mist
 
         else -> R.drawable.ic_sunny //default image if I don't have one for the current conditions
     }

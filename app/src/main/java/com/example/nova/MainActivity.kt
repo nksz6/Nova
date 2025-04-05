@@ -1,22 +1,17 @@
 //ICS342 NICK KELLEY
 
 package com.example.nova //package
-
-//basic android imports
+//android imports
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge //displays stuff edge to edge
 import androidx.activity.viewModels //lets me get ViewModel instances
-
 //navigation imports
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
-
 //Jetpack Compose imports
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.getValue
@@ -25,8 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-
-
 //project imports
 import com.example.nova.ui.theme.NovaTheme
 import androidx.compose.ui.graphics.Color
@@ -36,21 +29,18 @@ import com.example.nova.ui.screens.CurrentWeatherScreen
 import com.example.nova.ui.screens.ForecastScreen
 
 
-//declare MainActivity & create a ViewModel instance
+//MainActivity declaration, creating ViewModel instance...
 class MainActivity : ComponentActivity() {
     private val viewModel: WeatherViewModel by viewModels()
-
     //onCreate + enable edge to edge
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         //define the compose UI stuff and apply the theme
         setContent {
             NovaTheme {
                 //setup navigation
                 val navController = rememberNavController()
-
                 //Scaffold
                 Scaffold(
                     //top bar here
@@ -68,7 +58,7 @@ class MainActivity : ComponentActivity() {
                                     .padding(vertical = 25.dp)
                                     .padding(start = 10.dp)
                             ) {
-                                //this make it say "Nova"
+                                //title the top left
                                 Text(
                                     text = stringResource(id = R.string.app_name),
                                     style = MaterialTheme.typography.titleLarge,
@@ -83,7 +73,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
 
-                    //Navigation host
+                    //Navigation/NavHost
                     NavHost(
                         navController = navController,
                         startDestination = "currentWeather",

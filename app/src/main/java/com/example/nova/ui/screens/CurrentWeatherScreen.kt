@@ -29,6 +29,9 @@ import kotlin.math.roundToInt
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
+import com.example.nova.ui.theme.Brown
+import com.example.nova.ui.theme.MochiPopOne
+import com.example.nova.ui.theme.White
 import com.example.nova.utils.getWeatherIcon
 
 //current weather screen
@@ -191,7 +194,7 @@ fun CurrentWeatherScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                //get weather button
+                //get weather button - making them squares
                 Button(
                     onClick = {
                         if (zipCode.length == 5) {
@@ -205,9 +208,17 @@ fun CurrentWeatherScreen(
                             errorMessage = zipCodeErrorText
                         }
                     },
+                    shape = MaterialTheme.shapes.small, //button is rectangular in shape
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Brown, //button itself is brown
+                        contentColor = White //text is white
+                    ),
                     modifier = Modifier.weight(1f)
+
                 ) {
-                    Text(stringResource(R.string.get_weather))
+                    Text(stringResource(R.string.get_weather), //ext string
+                    fontFamily = MochiPopOne //cool font
+                    )
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -225,9 +236,18 @@ fun CurrentWeatherScreen(
                             errorMessage = zipCodeErrorText
                         }
                     },
+                    shape = MaterialTheme.shapes.small, //match w/ the shape of 'get weather'
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Brown, //button itself is brown
+                        contentColor = White //text is white tho
+
+                    ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(stringResource(R.string.view_forecast))
+                    Text(
+                        stringResource(R.string.view_forecast), //ext string
+                        fontFamily = MochiPopOne //cool ass custom font
+                    )
                 }
             }
         }

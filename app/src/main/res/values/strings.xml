@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Nova</string>
+    <string name="app_name">Nova Weather App</string>
     <string name="current_temperature">%1$d°</string>
     <string name="weather_condition">%1$s</string>
     <string name="location">%1$s</string>
@@ -9,7 +9,7 @@
     <string name="high_temp">High %1$d°</string>
     <string name="pressure">Pressure %1$d hPa</string>
     <string name="error_loading_weather">Error loading weather data</string>
-    <string name="enter_zip_code">Enter 5-digit zip code</string>
+    <string name="enter_zip_code">Please enter a 5-digit zip code</string>
     <string name="get_weather">Get Weather</string>
     <string name="view_forecast">View Forecast</string>
     <string name="zip_code_error">Please enter a valid 5-digit zip code</string>

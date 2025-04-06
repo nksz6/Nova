@@ -25,6 +25,9 @@ import java.util.*
 import kotlin.math.roundToInt
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import com.example.nova.ui.theme.Brown
+import com.example.nova.ui.theme.MochiPopOne
+import com.example.nova.ui.theme.White
 import com.example.nova.utils.getWeatherIcon
 
 //forecast screen
@@ -39,12 +42,22 @@ fun ForecastScreen(
     val error by viewModel.error.observeAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        //back button at the top
-        Button(
-            onClick = { navController.navigateUp() },
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(stringResource(R.string.back_to_current))
+        //back button at the top -> only display if error is not thrown
+        if (error == null) {
+            Button(
+                onClick = { navController.navigateUp() },
+                shape = MaterialTheme.shapes.small,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Brown,
+                    contentColor = White
+                ),
+                modifier = Modifier.padding(2.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.back_to_current),
+                    fontFamily = MochiPopOne
+                )
+            }
         }
 
         when {
@@ -65,16 +78,35 @@ fun ForecastScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(text = stringResource(id = R.string.error_loading_forecast))
+                        Text(
+                            text = stringResource(id = R.string.error_loading_forecast),
+                            fontFamily = MochiPopOne
+                        )
                         error?.let {
                             Text(
                                 text = it,
+                                fontFamily = MochiPopOne,
                                 style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.padding(16.dp)
                             )
-                        }
-                        Button(onClick = { navController.navigateUp() }) {
-                            Text(stringResource(R.string.back_to_current))
+                            //'Back to Current Weather' for invalid zip/error
+                            //'Back to Current Weather' button for valid zip
+                            Button(
+                                onClick = {
+                                    navController.navigateUp()
+                                },
+                                shape = MaterialTheme.shapes.small,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Brown, //brown button
+                                    contentColor = White //white text
+                                ),
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    stringResource(R.string.back_to_current),
+                                    fontFamily = MochiPopOne
+                                )
+                            }
                         }
                     }
                 }
@@ -85,6 +117,7 @@ fun ForecastScreen(
                     Text(
                         text = stringResource(R.string.forecast_for, city.name),
                         style = MaterialTheme.typography.headlineMedium,
+                        fontFamily = MochiPopOne,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
@@ -106,7 +139,10 @@ fun ForecastScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(stringResource(R.string.no_forecast_data))
+                    Text(
+                        stringResource(R.string.no_forecast_data),
+                        fontFamily = MochiPopOne
+                    )
                 }
             }
         }
@@ -148,6 +184,7 @@ fun ForecastDayItem(forecast: DailyForecast) {
                 //date
                 Text(
                     text = dateFormat.format(date),
+                    fontFamily = MochiPopOne,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
@@ -160,12 +197,14 @@ fun ForecastDayItem(forecast: DailyForecast) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
+                        fontFamily = MochiPopOne,
                         text = stringResource(
                             R.string.high_temp,
                             forecast.temp.max.roundToInt()
                         )
                     )
                     Text(
+                        fontFamily = MochiPopOne,
                         text = stringResource(
                             R.string.low_temp,
                             forecast.temp.min.roundToInt()
@@ -175,28 +214,31 @@ fun ForecastDayItem(forecast: DailyForecast) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                //weather description
+                //weather description (like 'light rain', 'few clouds', etc.)
                 forecast.weather.firstOrNull()?.let { weather ->
                     Text(
                         text = weather.description.capitalize(),
+                        fontFamily = MochiPopOne,
                         fontSize = 16.sp
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                //additional details
+                //additional info -> humidity & wind
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
+                        fontFamily = MochiPopOne,
                         text = stringResource(
                             R.string.humidity_with_value,
-                            forecast.humidity
+                            forecast.humidity,
                         )
                     )
                     Text(
+                        fontFamily = MochiPopOne,
                         text = stringResource(
                             R.string.wind_speed,
                             forecast.windSpeed
@@ -208,7 +250,7 @@ fun ForecastDayItem(forecast: DailyForecast) {
     }
 }
 
-//extension function to capitalize first letter of a string
+//function to capitalize the first letter of strings.
 fun String.capitalize(): String {
     return this.replaceFirstChar {
         if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()

@@ -27,6 +27,8 @@ import com.example.nova.ui.theme.Brown
 import com.example.nova.ui.viewmodel.WeatherViewModel
 import com.example.nova.ui.screens.CurrentWeatherScreen
 import com.example.nova.ui.screens.ForecastScreen
+import com.example.nova.ui.theme.MochiPopOne
+import com.example.nova.ui.theme.White
 
 
 //MainActivity declaration, creating ViewModel instance...
@@ -62,10 +64,11 @@ class MainActivity : ComponentActivity() {
                                 Text(
                                     text = stringResource(id = R.string.app_name),
                                     style = MaterialTheme.typography.titleLarge,
+                                    fontFamily = MochiPopOne,
                                     color = Color.White,
                                     modifier = Modifier
                                         .align(Alignment.CenterStart)
-                                        .padding(top = 12.5.dp)
+                                        .padding(top = 25.dp)
                                 )
                             }
                         }
@@ -104,18 +107,32 @@ class MainActivity : ComponentActivity() {
                                             horizontalAlignment = Alignment.CenterHorizontally,
                                             verticalArrangement = Arrangement.Center
                                         ) {
-                                            Text(text = stringResource(id = R.string.error_loading_weather))
+                                            Text(
+                                                text = stringResource(id = R.string.error_loading_weather),
+                                                fontFamily = MochiPopOne
+                                            )
                                             error?.let {
                                                 Text(
                                                     text = it,
                                                     style = MaterialTheme.typography.bodyMedium,
-                                                    modifier = Modifier.padding(16.dp)
+                                                    modifier = Modifier.padding(16.dp),
+                                                    fontFamily = MochiPopOne
                                                 )
                                             }
                                             Button(onClick = {
                                                 viewModel.fetchWeatherForCity("Minnetrista,MN,US")
-                                            }) {
-                                                Text("Retry")
+                                            },
+                                                shape = MaterialTheme.shapes.small,
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = Brown,
+                                                    contentColor = White
+                                                ),
+                                                modifier = Modifier.padding(16.dp)
+                                                ) {
+                                                Text(
+                                                    "Retry",
+                                                    fontFamily = MochiPopOne
+                                                )
                                             }
                                         }
                                     }
@@ -134,7 +151,10 @@ class MainActivity : ComponentActivity() {
                                         modifier = Modifier.fillMaxSize(),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text("No weather data available")
+                                        Text(
+                                            "No weather data available",
+                                            fontFamily = MochiPopOne
+                                        )
                                     }
                                 }
                             }

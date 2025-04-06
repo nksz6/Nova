@@ -48,7 +48,7 @@ fun CurrentWeatherScreen(
 
 
 
-    //extract string resources at the composable level
+    //setting error message in case there a problem w/ zip
     val zipCodeErrorText = stringResource(R.string.zip_code_error)
 
     Box(
@@ -56,13 +56,10 @@ fun CurrentWeatherScreen(
             .fillMaxSize()
             .padding(15.dp)
     ) {
-        //WEATHER CONTENT
-        //condition image in the top right
-
         //grab the icon code
         val iconCode = weatherData.weather.firstOrNull()?.icon ?: "01d" //default to sunny if no icon
 
-
+        //image is in top right
         Image(
             painter = painterResource(id = getWeatherIcon(iconCode)),
             contentDescription = stringResource(
@@ -80,8 +77,9 @@ fun CurrentWeatherScreen(
         val currentTemp = weatherData.main.temp.roundToInt()
         Text(
             text = stringResource(id = R.string.current_temperature, currentTemp),
-            fontSize = 75.sp,
-            fontWeight = FontWeight.Bold,
+            fontFamily = MochiPopOne,
+            fontSize = 65.sp,
+            fontWeight = FontWeight.Bold, //temp in big bold letters
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(vertical = 50.dp)
@@ -91,6 +89,7 @@ fun CurrentWeatherScreen(
         //location - it'll be at the top but not super big
         Text(
             text = stringResource(id = R.string.location, weatherData.name),
+            fontFamily = MochiPopOne,
             fontSize = 16.sp,
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -101,6 +100,7 @@ fun CurrentWeatherScreen(
         val feelsLikeTemp = weatherData.main.feelsLike.roundToInt()
         Text(
             text = stringResource(id = R.string.feels_like, feelsLikeTemp),
+            fontFamily = MochiPopOne,
             fontSize = 25.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -112,6 +112,7 @@ fun CurrentWeatherScreen(
         val lowTemp = weatherData.main.tempMin.roundToInt()
         Text(
             text = stringResource(id = R.string.low_temp, lowTemp),
+            fontFamily = MochiPopOne,
             fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -123,6 +124,7 @@ fun CurrentWeatherScreen(
         val highTemp = weatherData.main.tempMax.roundToInt()
         Text(
             text = stringResource(id = R.string.high_temp, highTemp),
+            fontFamily = MochiPopOne,
             fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -134,6 +136,7 @@ fun CurrentWeatherScreen(
         val humidity = weatherData.main.humidity
         Text(
             text = stringResource(id = R.string.humidity_with_value, humidity),
+            fontFamily = MochiPopOne,
             fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -145,6 +148,7 @@ fun CurrentWeatherScreen(
         val pressure = weatherData.main.pressure
         Text(
             text = stringResource(id = R.string.pressure, pressure),
+            fontFamily = MochiPopOne,
             fontSize = 20.sp,
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -170,7 +174,10 @@ fun CurrentWeatherScreen(
                         isZipCodeError = false
                     }
                 },
-                label = { Text(stringResource(R.string.enter_zip_code)) },
+                label = { Text(
+                    stringResource(R.string.enter_zip_code),
+                    fontFamily = MochiPopOne
+                    ) },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -179,7 +186,10 @@ fun CurrentWeatherScreen(
                 isError = isZipCodeError,
                 supportingText = {
                     if (isZipCodeError) {
-                        Text(errorMessage)
+                        Text(
+                            errorMessage,
+                            fontFamily = MochiPopOne
+                        )
                     }
                 },
                 modifier = Modifier
@@ -197,18 +207,16 @@ fun CurrentWeatherScreen(
                 //get weather button - making them squares
                 Button(
                     onClick = {
-                        if (zipCode.length == 5) {
-                            //fetch weather for zip code
-                            viewModel.fetchWeatherForZipCode(zipCode)
-                            //also fetch forecast for the same zip
-                            viewModel.fetchForecastForZipCode(zipCode)
+                        if (zipCode.length == 5) {  //has to be 5 characters, assuming we're in USA
+                            viewModel.fetchWeatherForZipCode(zipCode) //viewmodel for current conditions
+                            viewModel.fetchForecastForZipCode(zipCode)//viewmodel for forecast
                             isZipCodeError = false
                         } else {
                             isZipCodeError = true
                             errorMessage = zipCodeErrorText
                         }
                     },
-                    shape = MaterialTheme.shapes.small, //button is rectangular in shape
+                    shape = MaterialTheme.shapes.small, //button is rectangular
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Brown, //button itself is brown
                         contentColor = White //text is white
@@ -227,9 +235,9 @@ fun CurrentWeatherScreen(
                 Button(
                     onClick = {
                         if (zipCode.length == 5) {
-                            //fetch forecast before navigating
+                            //pre-load forecast
                             viewModel.fetchForecastForZipCode(zipCode)
-                            //navigate to forecast screen
+                            //then actually 'navigate' there
                             navController.navigate("forecast")
                         } else {
                             isZipCodeError = true
@@ -246,7 +254,7 @@ fun CurrentWeatherScreen(
                 ) {
                     Text(
                         stringResource(R.string.view_forecast), //ext string
-                        fontFamily = MochiPopOne //cool ass custom font
+                        fontFamily = MochiPopOne //cool custom font
                     )
                 }
             }

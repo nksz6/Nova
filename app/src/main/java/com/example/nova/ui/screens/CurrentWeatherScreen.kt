@@ -258,6 +258,29 @@ fun CurrentWeatherScreen(
                     )
                 }
             }
+
+            //spacer for second row
+            Spacer(modifier = Modifier.height(8.dp))
+
+            //in second row
+            //adding button to reset to the default location
+            Button(
+                onClick = {
+                    viewModel.resetToDefaultLocation()
+                    zipCode = "" //clear zip
+                    isZipCodeError = false
+                },
+                shape = MaterialTheme.shapes.small,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Brown,
+                    contentColor = White
+                ),
+            ) {
+                Text(
+                    stringResource(R.string.reset_location),
+                    fontFamily = MochiPopOne
+                )
+            }
         }
     }
 }

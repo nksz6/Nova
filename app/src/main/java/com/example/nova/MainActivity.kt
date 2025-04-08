@@ -120,7 +120,7 @@ class MainActivity : ComponentActivity() {
                                                 )
                                             }
                                             Button(onClick = {
-                                                viewModel.fetchWeatherForCity("Minnetrista,MN,US")
+                                                viewModel.resetToDefaultLocation() //when theres an error, reset to the default location
                                             },
                                                 shape = MaterialTheme.shapes.small,
                                                 colors = ButtonDefaults.buttonColors(
@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity() {
                                                 modifier = Modifier.padding(16.dp)
                                                 ) {
                                                 Text(
-                                                    "Retry",
+                                                    stringResource(R.string.reset_location),
                                                     fontFamily = MochiPopOne
                                                 )
                                             }

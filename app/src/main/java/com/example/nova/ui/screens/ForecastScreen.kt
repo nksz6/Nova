@@ -45,7 +45,9 @@ fun ForecastScreen(
         //back button at the top -> only display if error is not thrown
         if (error == null) {
             Button(
-                onClick = { navController.navigateUp() },
+                onClick = {
+                    navController.navigateUp()
+                },
                 shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Brown,
@@ -90,7 +92,6 @@ fun ForecastScreen(
                                 modifier = Modifier.padding(16.dp)
                             )
                             //'Back to Current Weather' for invalid zip/error
-                            //'Back to Current Weather' button for valid zip
                             Button(
                                 onClick = {
                                     navController.navigateUp()

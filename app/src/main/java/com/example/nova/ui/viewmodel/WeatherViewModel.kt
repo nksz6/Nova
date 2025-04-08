@@ -78,10 +78,18 @@ class WeatherViewModel(
         fetchWeatherForLocation(city, LocationType.CITY)
     }
 
-    //these two functions I left in because they were mentioned, I wanted to wait and see whether or I'd need them.
+    //fetch weather for a zipcode
     fun fetchWeatherForZipCode(zipCode: String) {
         fetchWeatherForLocation(zipCode, LocationType.ZIP_CODE)
     }
+
+    //function to reset to default location
+    fun resetToDefaultLocation() {
+        _error.value = null //clear previous errors
+        fetchWeatherForCity(DEFAULT_LOCATION)
+    }
+
+
 
     //this is the main method to fetch weather data for any location type.
     //handles loading state, caching, error handling, and rate limiting.

@@ -19,4 +19,5 @@
     <string name="no_forecast_data">No forecast data available</string>
     <string name="humidity_with_value">Humidity: %1$d%%</string>
     <string name="wind_speed">Wind: %1$.1f mph</string>
+    <string name="reset_location">Reset Location</string>
 </resources>

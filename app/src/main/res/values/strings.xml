@@ -20,4 +20,9 @@
     <string name="humidity_with_value">Humidity: %1$d%%</string>
     <string name="wind_speed">Wind: %1$.1f mph</string>
     <string name="reset_location">Reset Location</string>
+    <string name="weather_notification_channel_name">Weather Updates</string>
+    <string name="weather_notification_channel_description">Shows current weather conditions for your location</string>
+    <string name="my_location">My location</string>
+    <string name="location_permission_required">Location permission is required to use this feature</string>
+    <string name="notification_permission_required">Notification permission is required to show weather updates</string>
 </resources>

@@ -1,3 +1,4 @@
+//ICS342 - NICK KELLEY
 package com.example.nova.data.model
 
 import android.location.Location

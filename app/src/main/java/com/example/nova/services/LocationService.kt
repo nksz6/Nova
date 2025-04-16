@@ -1,13 +1,13 @@
 //ICS342 - NICK KELLEY
 package com.example.nova.services
 
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.Priority
 import android.app.*
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.location.Location
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
@@ -95,15 +95,12 @@ class LocationService : Service() {
         )
 
         // Start as foreground service
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(
-                NOTIFICATION_ID,
-                initialNotification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
-            )
-        } else {
-            startForeground(NOTIFICATION_ID, initialNotification)
-        }
+        startForeground(
+            NOTIFICATION_ID,
+            initialNotification,
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+        )
+
         return START_STICKY
     }
 
@@ -120,12 +117,15 @@ class LocationService : Service() {
     //start location updates
     fun startLocationUpdates() {
         try {
-            //create a location request using the compatible API
-            val locationRequest = LocationRequest.create().apply {
-                interval = LOCATION_REQUEST_INTERVAL
-                fastestInterval = TimeUnit.MINUTES.toMillis(1)
-                priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY // COARSE location
-            }
+            //create a location req using the builder API
+            val locationRequest = LocationRequest.Builder(LOCATION_REQUEST_INTERVAL)
+                .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY) //coarse
+                .setMinUpdateIntervalMillis(TimeUnit.MINUTES.toMillis(1))
+                .build()
+
+
+
+
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
@@ -142,43 +142,6 @@ class LocationService : Service() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
         Log.d(TAG, "Stopped location updates.")
     }
-
-    //get last known location (one-time request)
-//    fun getLastLocation(callback: (Location?) -> Unit) {
-//        try {
-//            fusedLocationClient.lastLocation
-//                .addOnSuccessListener { location ->
-//                    if (location != null) {
-//                        Log.d(TAG, "Last location: ${location.latitude}, ${location.longitude}")
-//                        callback(location)
-//                        //also fetch weather for notification
-//                        fetchWeatherForNotification(location)
-//                    } else {
-//                        Log.d(TAG, "Last location is null, requesting updates")
-//                        callback(null)
-//                        //start updates to get location
-//                        startLocationUpdates()
-//                    }
-//                }
-//                .addOnFailureListener { e ->
-//                    Log.e(TAG, "Error getting last location: ${e.message}")
-//                    callback(null)
-//                }
-//        } catch (e: SecurityException) {
-//            Log.e(TAG, "Security exception when getting last location: ${e.message}")
-//            callback(null)
-//        }
-//    }
-
-    //setter of client callback for continuous location updates
-    //fun setLocationCallback(listener: LocationListener ) {
-        //this.locationClientListener = listener
-    //}
-
-    //setter for the weather repository (injected from viewModel)
-    //fun setWeatherRepository(repository: WeatherRepository) {
-        //this.weatherRepository = repository
-    //}
 
     //fetching weather for the notification
     private fun fetchWeatherForNotification(location: Location) {
@@ -255,4 +218,44 @@ class LocationService : Service() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
+
+
+    //set client listener
+    fun setLocationListener(listener: LocationListener) {
+        this.locationClientListener = listener
+    }
+
+    //set the weather repository (injected from ViewModel)
+    fun setWeatherRepository(repository: WeatherRepository) {
+        this.weatherRepository = repository
+    }
+
+    // Get last known location (one-time request)
+    fun getLastLocation(callback: (Location?) -> Unit) {
+        try {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        Log.d(TAG, "Last location: ${location.latitude}, ${location.longitude}")
+                        callback(location)
+
+                        // Also fetch weather for notification
+                        fetchWeatherForNotification(location)
+                    } else {
+                        Log.d(TAG, "Last location is null, requesting updates")
+                        callback(null)
+                        // Start updates to get location
+                        startLocationUpdates()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "Error getting last location: ${e.message}")
+                    callback(null)
+                }
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Security exception when getting last location: ${e.message}")
+            callback(null)
+        }
+    }
+
 }

@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nova.data.model.WeatherResponse //to be implemented
 import com.example.nova.data.repository.WeatherRepository
 import kotlinx.coroutines.launch
 import java.util.*

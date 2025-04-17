@@ -46,6 +46,7 @@ import com.example.nova.data.repository.WeatherRepository
 import com.example.nova.services.LocationService
 import com.example.nova.data.model.LocationWeatherViewModel
 
+
 //MainActivity declaration, creating ViewModel instance...
 class MainActivity : ComponentActivity() {
     private val viewModel: WeatherViewModel by viewModels()
@@ -70,11 +71,6 @@ class MainActivity : ComponentActivity() {
                     locationWeatherViewModel.fetchWeatherForLocation(location)
                 }
             })
-
-            //if permissions are already granted, request location
-            if(hasLocationPermission()) {
-                requestLocation()
-            }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -89,7 +85,6 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            //if location permission granted, also check notification permission
             if (!hasNotificationPermission()) {
                 notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             } else {
@@ -102,8 +97,10 @@ class MainActivity : ComponentActivity() {
                 getString(R.string.location_permission_required),
                 Toast.LENGTH_LONG
             ).show()
+            locationWeatherViewModel.clearCache()
         }
     }
+
     //notification permission launcher
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -111,7 +108,6 @@ class MainActivity : ComponentActivity() {
         if (isGranted)  {
             startLocationService()
         } else {
-            //show message but continue...(graceful handling)
             Toast.makeText(
                 this,
                 getString(R.string.notification_permission_required),
@@ -126,6 +122,7 @@ class MainActivity : ComponentActivity() {
 
         //initialize LocationWeatherViewModel
         locationWeatherViewModel = LocationWeatherViewModel(WeatherRepository(WeatherApiService.create()))
+        observeLocationWeather()
 
         enableEdgeToEdge()
         //define the compose UI stuff and apply the theme
@@ -177,6 +174,7 @@ class MainActivity : ComponentActivity() {
                             val weatherData by viewModel.weatherData.observeAsState()
                             val isLoading by viewModel.isLoading.observeAsState(initial = true)
                             val error by viewModel.error.observeAsState()
+                            val locationWeatherData by locationWeatherViewModel.locationWeatherData.observeAsState()
 
                             when {
                                 isLoading -> {
@@ -228,9 +226,17 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
+                                locationWeatherData != null -> {
+                                    CurrentWeatherScreen(
+                                        weatherData = locationWeatherData!!, //location-based weather data
+                                        viewModel = viewModel,
+                                        navController = navController,
+                                        onMyLocationClicked = { onMyLocationClicked() }
+                                    )
+                                }
                                 weatherData != null -> {
                                     CurrentWeatherScreen(
-                                        weatherData = weatherData!!,
+                                        weatherData = weatherData!!, //nonlocation-based weather data
                                         viewModel = viewModel,
                                         navController = navController,
                                         onMyLocationClicked = { onMyLocationClicked() }
@@ -272,6 +278,8 @@ class MainActivity : ComponentActivity() {
                 bindService(intent, serviceConnection, BIND_AUTO_CREATE)
             }
         }
+        //check if we have a permission before starting service
+        checkPermissionsAndStartService()
     }
 
     override fun onStop() {
@@ -283,80 +291,52 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    //handler for location button click
-    private fun onMyLocationClicked() {
-        //request permission if not granted
-        if (!hasLocationPermission()) {
-            locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-        } else {
-            //request notification permission
-            if(!hasNotificationPermission()) {
-                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                //start service and request location
+    //Check Permissions Before Starting Service
+    private fun checkPermissionsAndStartService() {
+        if (hasLocationPermission()) {
+            if (hasNotificationPermission()) {
                 startLocationService()
+            } else {
+                //has location permission but not notification
+                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             }
+        } else {
+            //does not have location permission
+            locationPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
-    //check if location permission is granted
-    private fun hasLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+    //start the service!
+    private fun startLocationService() {
+        Intent(this, LocationService::class.java).also { intent ->
+            startService(intent)
+        }
     }
 
-    //check if notification permission is granted
-    private fun hasNotificationPermission() : Boolean {
+    //check if location permission granted
+    private fun hasLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    //check if notification permission granted
+    private fun hasNotificationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             this,
             android.Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    // Start the location service
-    private fun startLocationService() {
-        // Start the service
-        val serviceIntent = Intent(this, LocationService::class.java)
-        startForegroundService(serviceIntent)
-        //req location update
-        requestLocation()
-    }
-
-    //request location from the service
-    private fun requestLocation() {
-        locationService?.getLastLocation { location ->
-            if (location != null) {
-                locationWeatherViewModel.fetchWeatherForLocation(location)
-            } else {
-                // Start location updates if no last location
-                locationService?.startLocationUpdates()
-            }
-        }
+    //when myLocation is clicked in view
+    private fun onMyLocationClicked() {
+        checkPermissionsAndStartService()
     }
 
     private fun observeLocationWeather() {
-        locationWeatherViewModel.locationWeatherData.observe(this) { weatherData ->
-
-            //update UI with locationBased weather data
-            Log.d("MainActivity", "Location weather updated: ${weatherData?.name}")
-
-            locationWeatherViewModel.isLoading.observe(this) { isLoading ->
-                //show/hide loading for location-based updates
-            }
-
-            locationWeatherViewModel.error.observe(this) { error ->
-                if (error != null) {
-                    Toast.makeText(this, "Location weather error: $error",
-                        Toast.LENGTH_SHORT).show()
-                }
-            }
-
+        locationWeatherViewModel.locationWeatherData.observe(this) { weather ->
+            Log.d("MainActivity", "Weather Data Updated: $weather")
         }
     }
-
-
-
-
 }

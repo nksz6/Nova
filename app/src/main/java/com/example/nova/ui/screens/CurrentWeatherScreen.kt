@@ -1,6 +1,4 @@
 //ICS342 - NICK KELLEY
-
-//package
 package com.example.nova.ui.screens
 
 //imports
@@ -34,19 +32,20 @@ import com.example.nova.ui.theme.MochiPopOne
 import com.example.nova.ui.theme.White
 import com.example.nova.utils.getWeatherIcon
 
+
+
 //current weather screen
 @Composable
 fun CurrentWeatherScreen(
     weatherData: WeatherResponse,
     viewModel: WeatherViewModel,
-    navController: NavController
+    navController: NavController,
+    onMyLocationClicked: () -> Unit = {}
 ) {
     //state for zip-code input
     var zipCode by remember { mutableStateOf("") }
     var isZipCodeError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-
-
 
     //setting error message in case there a problem w/ zip
     val zipCodeErrorText = stringResource(R.string.zip_code_error)
@@ -164,38 +163,57 @@ fun CurrentWeatherScreen(
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //zip-code input
-            OutlinedTextField(
-                value = zipCode,
-                onValueChange = {
-                    //only allow digits and limit to 5 characters
-                    if (it.all { char -> char.isDigit() } && it.length <= 5) {
-                        zipCode = it
-                        isZipCodeError = false
-                    }
-                },
-                label = { Text(
-                    stringResource(R.string.enter_zip_code),
-                    fontFamily = MochiPopOne
+            //zip-code input + location button
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = zipCode,
+                    onValueChange = {
+                        //only allow digits and limit to 5 characters
+                        if (it.all { char -> char.isDigit() } && it.length <= 5) {
+                            zipCode = it
+                            isZipCodeError = false
+                        }
+                    },
+                    label = { Text(
+                        stringResource(R.string.enter_zip_code),
+                        fontFamily = MochiPopOne
                     ) },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                singleLine = true,
-                isError = isZipCodeError,
-                supportingText = {
-                    if (isZipCodeError) {
-                        Text(
-                            errorMessage,
-                            fontFamily = MochiPopOne
-                        )
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(remember { FocusRequester() }) //use shared focus requester
-            )
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    singleLine = true,
+                    isError = isZipCodeError,
+                    supportingText = {
+                        if(isZipCodeError) {
+                            Text(
+                                errorMessage,
+                                fontFamily = MochiPopOne
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .focusRequester(remember { FocusRequester() })
+                )
+
+                //location button itself
+                IconButton(
+                    onClick = { onMyLocationClicked() },
+                    modifier = Modifier.padding(
+                        start = 0.dp
+                    )
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_location_svg_blue),
+                        contentDescription = stringResource(R.string.my_location),
+                        modifier = Modifier.size(36.dp),
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 

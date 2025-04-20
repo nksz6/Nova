@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.fragment.ktx)
+
     //retrofit with Gson
     implementation(libs.retrofit)
     implementation(libs.converter.gson)

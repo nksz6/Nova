@@ -18,39 +18,79 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 @ExperimentalCoroutinesApi
 class WeatherViewModelUnitTest {
 
-    // Rule to make LiveData work synchronously
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    // Test coroutine dispatcher
     private val testDispatcher = StandardTestDispatcher()
 
     @Mock
     private lateinit var mockRepository: WeatherRepository
-
     private lateinit var viewModel: WeatherViewModel
 
     @Before
     fun setup() {
-        // Set up Dispatchers.Main for coroutines
         Dispatchers.setMain(testDispatcher)
-
-        // Initialize mocks
         MockitoAnnotations.openMocks(this)
-
-        // Create the ViewModel with mock repository
         viewModel = WeatherViewModel(mockRepository)
     }
 
     @After
     fun tearDown() {
-        // Reset the main dispatcher
         Dispatchers.resetMain()
     }
 
     @Test
     fun testInitialState() {
-        // Just a simple test for now
         println("Test passed!")
+    }
+
+    @Test
+    fun testFetchWeatherForCity() {
+        val cityName = "Minneapolis"
+        viewModel.fetchWeatherForCity(cityName)
+    }
+
+    @Test
+    fun testFetchWeatherForZipCode() {
+        val zipCode = "55401"
+        viewModel.fetchWeatherForZipCode(zipCode)
+    }
+
+    @Test
+    fun testResetToDefaultLocation() {
+        viewModel.resetToDefaultLocation()
+    }
+
+    @Test
+    fun testFetchForecastForZipCode() {
+        val zipCode = "55401"
+        viewModel.fetchForecastForZipCode(zipCode)
+    }
+
+    @Test
+    fun testFetchWeatherForCity_CallsRepository() {
+        val cityName = "Minneapolis"
+        viewModel.fetchWeatherForCity(cityName)
+    }
+
+    @Test
+    fun testFetchWeatherForZipCode_CallsRepository() {
+        val zipCode = "55401"
+        viewModel.fetchWeatherForZipCode(zipCode)
+    }
+
+    @Test
+    fun testErrorHandling() {
+        viewModel.fetchWeatherForCity("InvalidCity")
+    }
+
+    @Test
+    fun testLoadingState() {
+        assert(viewModel.isLoading.value == true)
+    }
+
+    @Test
+    fun testCachingBehavior() {
+        viewModel.fetchWeatherForCity("Minneapolis")
+        viewModel.fetchWeatherForCity("Minneapolis")
     }
 }

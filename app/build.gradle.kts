@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.testImplementation
+
 //ICS342 NICK KELLEY
 
 plugins {
@@ -9,7 +11,6 @@ plugins {
 android {
     namespace = "com.example.nova"
     compileSdk = 35
-    //noinspection GradleDependency
 
     defaultConfig {
         applicationId = "com.example.nova"
@@ -72,14 +73,24 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
+    //testing
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.junit)
+    testImplementation (libs.androidx.core.testing)
+    testImplementation (libs.robolectric)
+    testImplementation (libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //navigation compose
     implementation(libs.androidx.navigation.compose)
+
 }

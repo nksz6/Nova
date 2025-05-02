@@ -11,7 +11,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -339,25 +338,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun observeLocationWeather() {
-        locationWeatherViewModel.locationWeatherData.observe(this) { weatherData ->
-
-            //update UI with locationBased weather data
-            Log.d("MainActivity", "Location weather updated: ${weatherData?.name}")
-
-            locationWeatherViewModel.isLoading.observe(this) { isLoading ->
-                //show/hide loading for location-based updates
-            }
-
-            locationWeatherViewModel.error.observe(this) { error ->
-                if (error != null) {
-                    Toast.makeText(
-                        this, "Location weather error: $error",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-        }
-    }
 }

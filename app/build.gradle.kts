@@ -11,6 +11,12 @@ plugins {
 android {
     namespace = "com.example.nova"
     compileSdk = 35
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.nova"

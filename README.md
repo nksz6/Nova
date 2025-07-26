@@ -1,7 +1,7 @@
 # Nova Weather
+### By: Nick Kelley ([@nksz6](https://github.com/nksz6), [@nkelley-metro](https://github.com/nkelley-metro))
 
 An Android weather application built with Kotlin and Jetpack Compose, utilizing a location service and the OpenWeatherMap API to deliver real-time local weather updates and forecasts.
-
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
